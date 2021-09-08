@@ -18,6 +18,10 @@ extern "C"
     #include "lauxlib.h"
 }
 
+class CLuaPhysicsRigidBody;
+class CLuaPhysicsStaticCollision;
+class CLuaPhysicsShape;
+
 CLuaFunctionRef luaM_toref(lua_State* luaVM, int iArgument);
 
 #define TO_ELEMENTID(x) ((ElementID) reinterpret_cast < unsigned long > (x) )
@@ -34,6 +38,9 @@ void lua_pushresource(lua_State* luaVM, class CResource* pResource);
 void lua_pushtextdisplay(lua_State* luaVM, class CTextDisplay* pDisplay);
 void lua_pushtextitem(lua_State* luaVM, class CTextItem* pItem);
 void lua_pushtimer(lua_State* luaVM, class CLuaTimer* pTimer);
+void lua_pushrigidbody(lua_State* luaVM, CLuaPhysicsRigidBody* pElement);
+void lua_pushstaticcollision(lua_State* luaVM, CLuaPhysicsStaticCollision* pElement);
+void lua_pushshape(lua_State* luaVM, CLuaPhysicsShape* pShape);
 void lua_pushxmlnode(lua_State* luaVM, class CXMLNode* pNode);
 void lua_pushban(lua_State* luaVM, class CBan* pBan);
 void lua_pushquery(lua_State* luaVM, class CDbJobData* pJobData);
@@ -45,6 +52,12 @@ void lua_pushvector(lua_State* luaVM, const CVector& vector);
 void lua_pushvector(lua_State* luaVM, const CVector4D& vector);
 void lua_pushmatrix(lua_State* luaVM, const CMatrix& matrix);
 
+class CLuaMain& lua_getownercluamain(lua_State* L);
+class CResource& lua_getownerresource(lua_State* L);
+
+void lua_pushrigidbody(lua_State* luaVM, CLuaPhysicsRigidBody* pElement);
+void lua_pushstaticcollision(lua_State* luaVM, CLuaPhysicsStaticCollision* pElement);
+void lua_pushshape(lua_State* luaVM, CLuaPhysicsShape* pShape);
 // Converts any type to string
 const char* lua_makestring(lua_State* luaVM, int iArgument);
 

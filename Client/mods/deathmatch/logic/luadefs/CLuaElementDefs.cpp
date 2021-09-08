@@ -432,15 +432,36 @@ int CLuaElementDefs::OOP_GetElementMatrix(lua_State* luaVM)
 int CLuaElementDefs::GetElementPosition(lua_State* luaVM)
 {
     // Verify the argument
-    CClientEntity*   pEntity = NULL;
+    CLuaPhysicsWorldElement* pWorldElement = nullptr;
+    CClientEntity*           pEntity = nullptr;
+
     CScriptArgReader argStream(luaVM);
-    argStream.ReadUserData(pEntity);
+
+    if (argStream.NextIsUserDataOfType<CLuaPhysicsWorldElement>())
+    {
+        argStream.ReadUserData(pWorldElement);
+    }
+    else
+        argStream.ReadUserData(pEntity);
 
     if (!argStream.HasErrors())
     {
         // Grab the position
         CVector vecPosition;
-        if (CStaticFunctionDefinitions::GetElementPosition(*pEntity, vecPosition))
+        bool    bHasPosition = false;
+
+        if (pWorldElement)
+        {
+            vecPosition = pWorldElement->GetPosition();
+            bHasPosition = true;
+        }
+        else if (pEntity != nullptr)            // because of C6011, should always be true anyway
+            if (CStaticFunctionDefinitions::GetElementPosition(*pEntity, vecPosition))
+            {
+                bHasPosition = true;
+            }
+
+        if (bHasPosition)
         {
             // Return it
             lua_pushnumber(luaVM, vecPosition.fX);
@@ -482,18 +503,39 @@ int CLuaElementDefs::OOP_GetElementPosition(lua_State* luaVM)
 int CLuaElementDefs::GetElementRotation(lua_State* luaVM)
 {
     //  float float float getElementRotation ( element theElement [, string rotOrder = "default" ] )
-    CClientEntity*      pEntity = NULL;
+    CLuaPhysicsWorldElement*    pWorldElement = nullptr;
+    CClientEntity*              pEntity = nullptr;
+
     eEulerRotationOrder rotationOrder;
 
     CScriptArgReader argStream(luaVM);
-    argStream.ReadUserData(pEntity);
+    if (argStream.NextIsUserDataOfType<CLuaPhysicsWorldElement>())
+    {
+        argStream.ReadUserData(pWorldElement);
+    }
+    else
+        argStream.ReadUserData(pEntity);
+
     argStream.ReadEnumString(rotationOrder, EULER_DEFAULT);
 
     if (!argStream.HasErrors())
     {
         // Grab the rotation
         CVector vecRotation;
-        if (CStaticFunctionDefinitions::GetElementRotation(*pEntity, vecRotation, rotationOrder))
+        bool    bHasRotation = false;
+
+        if (pWorldElement)
+        {
+            vecRotation = pWorldElement->GetRotation();
+            bHasRotation = true;
+        }
+        else if (pEntity)
+            if (CStaticFunctionDefinitions::GetElementRotation(*pEntity, vecRotation, rotationOrder))
+            {
+                bHasRotation = true;
+            }
+
+        if (bHasRotation)
         {
             // Return it
             lua_pushnumber(luaVM, vecRotation.fX);
@@ -1664,16 +1706,30 @@ int CLuaElementDefs::CreateElement(lua_State* luaVM)
 int CLuaElementDefs::DestroyElement(lua_State* luaVM)
 {
     // Verify the argument
-    CClientEntity*   pEntity = NULL;
-    CScriptArgReader argStream(luaVM);
-    argStream.ReadUserData(pEntity);
+    CClientEntity*      pEntity = nullptr;
+    CLuaPhysicsElement* pPhysicsElement = NULL;
+    CScriptArgReader    argStream(luaVM);
+    if (argStream.NextIsUserDataOfType<CLuaPhysicsWorldElement>())
+    {
+        argStream.ReadUserData(pPhysicsElement);
+    }
+    else
+        argStream.ReadUserData(pEntity);
 
     if (!argStream.HasErrors())
     {
-        // Destroy it
-        if (CStaticFunctionDefinitions::DestroyElement(*pEntity))
+        if (pEntity)
         {
-            lua_pushboolean(luaVM, true);
+            // Destroy it
+            if (CStaticFunctionDefinitions::DestroyElement(*pEntity))
+            {
+                lua_pushboolean(luaVM, true);
+                return 1;
+            }
+        }
+        else
+        {
+            lua_pushboolean(luaVM, pPhysicsElement->Destroy());
             return 1;
         }
     }
@@ -1792,8 +1848,9 @@ int CLuaElementDefs::RemoveElementData(lua_State* luaVM)
 int CLuaElementDefs::SetElementMatrix(lua_State* luaVM)
 {
     //  setElementMatrix ( element theElement, table matrix )
-    CClientEntity* pEntity;
-    CMatrix        matrix;
+    CClientEntity* pEntity = NULL;
+
+    CMatrix matrix;
 
     CScriptArgReader argStream(luaVM);
     argStream.ReadUserData(pEntity);
@@ -1829,22 +1886,39 @@ int CLuaElementDefs::SetElementMatrix(lua_State* luaVM)
 
 int CLuaElementDefs::SetElementPosition(lua_State* luaVM)
 {
-    CClientEntity*   pEntity;
+    CLuaPhysicsWorldElement*    pWorldElement = nullptr;
+    CClientEntity*              pEntity = nullptr;
+
     CVector          vecPosition;
     bool             bWarp = true;
     CScriptArgReader argStream(luaVM);
-    argStream.ReadUserData(pEntity);
+    if (argStream.NextIsUserDataOfType<CLuaPhysicsWorldElement>())
+    {
+        argStream.ReadUserData(pWorldElement);
+    }
+    else
+        argStream.ReadUserData(pEntity);
     argStream.ReadVector3D(vecPosition);
     argStream.ReadBool(bWarp, true);
 
     // Verify the arguments
     if (!argStream.HasErrors())
     {
-        // Try to set the position
-        if (CStaticFunctionDefinitions::SetElementPosition(*pEntity, vecPosition, bWarp))
+        if (pWorldElement)
         {
+            pWorldElement->SetPosition(vecPosition);
             lua_pushboolean(luaVM, true);
             return 1;
+        }
+        else
+        {
+            if (pEntity)
+                // Try to set the position
+                if (CStaticFunctionDefinitions::SetElementPosition(*pEntity, vecPosition, bWarp))
+                {
+                    lua_pushboolean(luaVM, true);
+                    return 1;
+                }
         }
     }
     else
@@ -1858,23 +1932,53 @@ int CLuaElementDefs::SetElementPosition(lua_State* luaVM)
 int CLuaElementDefs::SetElementRotation(lua_State* luaVM)
 {
     //  bool setElementRotation ( element theElement, float rotX, float rotY, float rotZ [, string rotOrder = "default", bool fixPedRotation = false ] )
-    CClientEntity*      pEntity;
+    CLuaPhysicsRigidBody*       pRigidBody = nullptr;
+    CLuaPhysicsStaticCollision* pStaticCollision = nullptr;
+    CClientEntity*              pEntity = nullptr;
+
     CVector             vecRotation;
     eEulerRotationOrder rotationOrder;
     bool                bNewWay;
 
     CScriptArgReader argStream(luaVM);
-    argStream.ReadUserData(pEntity);
+
+    if (argStream.NextIsUserDataOfType<CLuaPhysicsRigidBody>())
+    {
+        argStream.ReadUserData(pRigidBody);
+    }
+    else if (argStream.NextIsUserDataOfType<CLuaPhysicsStaticCollision>())
+    {
+        argStream.ReadUserData(pStaticCollision);
+    }
+    else
+        argStream.ReadUserData(pEntity);
+
     argStream.ReadVector3D(vecRotation);
     argStream.ReadEnumString(rotationOrder, EULER_DEFAULT);
     argStream.ReadBool(bNewWay, false);
 
     if (!argStream.HasErrors())
     {
-        if (CStaticFunctionDefinitions::SetElementRotation(*pEntity, vecRotation, rotationOrder, bNewWay))
+        if (pRigidBody)
         {
+            pRigidBody->SetRotation(vecRotation);
             lua_pushboolean(luaVM, true);
             return 1;
+        }
+        else if (pStaticCollision)
+        {
+            pStaticCollision->SetRotation(vecRotation);
+            lua_pushboolean(luaVM, true);
+            return 1;
+        }
+        else
+        {
+            if (pEntity != nullptr)            // because of C6011, should always be true anyway
+                if (CStaticFunctionDefinitions::SetElementRotation(*pEntity, vecRotation, rotationOrder, bNewWay))
+                {
+                    lua_pushboolean(luaVM, true);
+                    return 1;
+                }
         }
     }
     else

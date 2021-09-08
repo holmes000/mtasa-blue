@@ -26,6 +26,7 @@ class CLuaMain;
 #define MAX_SCRIPTNAME_LENGTH 64
 
 #include <list>
+#include "CSharedLuaMain.h"
 
 struct CRefInfo
 {
@@ -33,16 +34,16 @@ struct CRefInfo
     int               iFunction;
 };
 
-class CLuaMain            //: public CClient
+class CLuaMain : public CSharedLuaMain            //: public CClient
 {
 public:
     ZERO_ON_NEW
     CLuaMain(class CLuaManager* pLuaManager, CResource* pResourceOwner, bool bEnableOOP);
-    ~CLuaMain();
+    virtual ~CLuaMain();
 
     bool LoadScriptFromBuffer(const char* cpBuffer, unsigned int uiSize, const char* szFileName);
     bool LoadScript(const char* szLUAScript);
-    void UnloadScript();
+    virtual void UnloadScript();
 
     void Start();
 
@@ -92,8 +93,6 @@ private:
     bool m_bBeingDeleted;            // prevent it being deleted twice
 
     CElapsedTime m_FunctionEnterTimer;
-
-    class CResource* m_pResource;
 
     std::list<CXMLFile*>                            m_XMLFiles;
     std::unordered_set<std::unique_ptr<SXMLString>> m_XMLStringNodes;

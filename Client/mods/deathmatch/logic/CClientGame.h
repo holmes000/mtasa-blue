@@ -278,6 +278,7 @@ public:
     CRPCFunctions*                GetRPCFunctions() { return m_pRPCFunctions; }
     CSingularFileDownloadManager* GetSingularFileDownloadManager() { return m_pSingularFileDownloadManager; };
     CServerInfo*                  GetServerInfo() { return m_ServerInfo.get(); }
+    CBulletPhysics*               GetPhysics() { return m_pPhysics.get(); }
 
     CClientEntity* GetRootEntity() { return m_pRootEntity; }
     CEvents*       GetEvents() { return &m_Events; }
@@ -439,6 +440,12 @@ public:
     void RestreamWorld();
 
     void TriggerDiscordJoin(SString strSecret);
+
+    inline const bool IsServerRPCFunctionDisabled(const eServerRPCFunctions eServerRPCFunction) const { return m_disabledServerRPCFunctions[eServerRPCFunction]; };
+    inline void SetServerRPCFunctionDisabled(const eServerRPCFunctions eServerRPCFunction, const bool bDisabled = true)
+    {
+        m_disabledServerRPCFunctions[eServerRPCFunction] = bDisabled;
+    };
 
 private:
     // CGUI Callbacks
@@ -824,6 +831,8 @@ private:
     SString                 m_strACInfo;
     std::map<uint, uint>    m_SentMessageIds;
 
+    std::array<bool, eServerRPCFunctions::NUM_SERVER_RPC_FUNCS> m_disabledServerRPCFunctions;
+
     bool              m_bLastKeyWasEscapeCancelled;
     std::set<SString> m_AllowKeyUpMap;
     uint              m_uiPrecisionCallDepth;
@@ -839,6 +848,8 @@ private:
     AnimAssociations_type                                m_mapOfCustomAnimationAssociations;
     // Key is the task and value is the CClientPed*
     RunNamedAnimTask_type m_mapOfRunNamedAnimTasks;
+
+    std::unique_ptr<CBulletPhysics> m_pPhysics;
 };
 
 extern CClientGame* g_pClientGame;

@@ -67,4 +67,21 @@ DECLARE_ENUM(EHashFunction::EHashFunctionType);
 DECLARE_ENUM_CLASS(PasswordHashFunction);
 DECLARE_ENUM_CLASS(StringEncryptFunction);
 
+enum class ePhysicsElementType
+{
+    Unknown,
+    WorldElement,
+    RigidBody,
+    StaticCollision,
+
+    // Shapes
+    Shape,
+    ConvexShape,
+    BoxShape,
+};
+DECLARE_ENUM_CLASS(ePhysicsElementType);
+
 DECLARE_ENUM(ePacketID);
+
+DECLARE_ENUM(eElementRPCFunctions);
+DECLARE_ENUM(eServerRPCFunctions);

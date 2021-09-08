@@ -341,6 +341,8 @@ CClientGame::CClientGame(bool bLocalPlay) : m_ServerInfo(new CServerInfo())
 
     // Setup builtin Lua events
     SetupGlobalLuaEvents();
+    
+    m_pPhysics = std::make_unique<CBulletPhysics>();
 }
 
 CClientGame::~CClientGame()
@@ -1133,6 +1135,8 @@ void CClientGame::DoPulses()
         // Call onClientRender LUA event
         CLuaArguments Arguments;
         m_pRootEntity->CallEvent("onClientRender", Arguments, false);
+
+        g_pClientGame->GetPhysics()->DoPulse();
 
         // Disallow scripted dxSetRenderTarget for old scripts
         g_pCore->GetGraphics()->GetRenderItemManager()->EnableSetRenderTargetOldVer(false);
@@ -2465,6 +2469,7 @@ void CClientGame::AddBuiltInEvents()
     m_Events.AddEvent("onClientElementDestroy", "", NULL, false);
     m_Events.AddEvent("onClientElementModelChange", "oldModel, newModel", nullptr, false);
     m_Events.AddEvent("onClientElementDimensionChange", "oldDimension, newDimension", nullptr, false);
+    m_Events.AddEvent("onClientElementInteriorChange", "oldInterior, newInterior", nullptr, false);
 
     // Player events
     m_Events.AddEvent("onClientPlayerJoin", "", NULL, false);
@@ -3676,6 +3681,8 @@ void CClientGame::PostWorldProcessHandler()
     double dTimeSlice = m_TimeSliceTimer.Get();
     m_TimeSliceTimer.Reset();
     m_uiFrameCount++;
+
+    m_pPhysics->DrawDebug();
 
     // Call onClientPreRender LUA event
     CLuaArguments Arguments;

@@ -47,6 +47,7 @@
 #include <ijsify.h>
 #include <Common.h>
 #include "net/Packets.h"
+#include "net/rpc_enums.h"
 #include "Enums.h"
 #include "net/SyncStructures.h"
 #include "CIdArray.h"
@@ -55,6 +56,7 @@
 // Shared logic includes
 #include <Utils.h>
 #include <CClientCommon.h>
+#include "CBulletPhysicsCommon.h"
 #include <CClientManager.h>
 #include <CClient3DMarker.h>
 #include <CClientCheckpoint.h>
@@ -92,6 +94,7 @@
 #include <CClientWebBrowser.h>
 #include <CClientSearchLight.h>
 #include <CClientEffect.h>
+#include "CBulletPhysics.h"
 #include <CCustomData.h>
 #include <CElementArray.h>
 #include <CLogger.h>
@@ -108,6 +111,7 @@
 #include <lua/CLuaArguments.h>
 #include <lua/CLuaMain.h>
 #include "CEasingCurve.h"
+#include <lua/CLuaSharedFunctionParseHelpers.h>
 #include <lua/CLuaFunctionParseHelpers.h>
 #include <CScriptArgReader.h>
 #include <luadefs/CLuaDefs.h>
@@ -123,6 +127,7 @@
 #include <luadefs/CLuaEffectDefs.h>
 #include <luadefs/CLuaElementDefs.h>
 #include <luadefs/CLuaEngineDefs.h>
+#include <luadefs/CLuaPhysicsDefs.h>
 #include <luadefs/CLuaGUIDefs.h>
 #include <luadefs/CLuaMarkerDefs.h>
 #include <luadefs/CLuaNetworkDefs.h>

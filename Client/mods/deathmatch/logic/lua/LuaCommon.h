@@ -43,6 +43,10 @@ class CClientWeapon;
 class CClientRadarArea;
 class CClientPointLights;
 class CLuaTimer;
+class CLuaPhysicsElement;
+class CLuaPhysicsRigidBody;
+class CLuaPhysicsStaticCollision;
+class CLuaPhysicsShape;
 class CResource;
 class CXMLNode;
 
@@ -53,6 +57,9 @@ class CClientEntity* lua_toelement(lua_State* luaVM, int iArgument);
 void lua_pushelement(lua_State* luaVM, CClientEntity* pElement);
 void lua_pushresource(lua_State* luaVM, CResource* pElement);
 void lua_pushtimer(lua_State* luaVM, CLuaTimer* pElement);
+void lua_pushrigidbody(lua_State* luaVM, CLuaPhysicsRigidBody* pElement);
+void lua_pushstaticcollision(lua_State* luaVM, CLuaPhysicsStaticCollision* pElement);
+void lua_pushshape(lua_State* luaVM, CLuaPhysicsShape* pShape);
 void lua_pushxmlnode(lua_State* luaVM, CXMLNode* pElement);
 void lua_pushuserdata(lua_State* luaVM, void* pData);
 
@@ -77,6 +84,9 @@ void lua_classvariable(lua_State* luaVM, const char* szVariable, const char* set
 void lua_classmetamethod(lua_State* luaVM, const char* szName, lua_CFunction fn);
 
 const char* lua_makestring(lua_State* luaVM, int iArgument);
+
+class CLuaMain& lua_getownercluamain(lua_State* L);
+class CResource& lua_getownerresource(lua_State* L);
 
 // Lua debug info for logging
 enum

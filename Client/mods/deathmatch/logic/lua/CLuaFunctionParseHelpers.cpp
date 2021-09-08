@@ -9,6 +9,10 @@
  *****************************************************************************/
 
 #include "StdInc.h"
+#include "physics/CLuaPhysicsBaseManager.h"
+#include "physics/CLuaPhysicsRigidBodyManager.h"
+#include "physics/CLuaPhysicsStaticCollisionManager.h"
+#include "physics/CLuaPhysicsShapeManager.h"
 
 //
 // enum values <-> script strings
@@ -698,7 +702,7 @@ SString GetUserDataClassName(void* ptr, lua_State* luaVM, bool bFindElementType)
     if (auto* pVar = UserDataCast<CLuaVector4D>((CLuaVector4D*)NULL, ptr, luaVM))
         return GetClassTypeName(pVar);
 
-    return "";
+    return GetSharedUserDataClassName(ptr, luaVM);
 }
 
 //

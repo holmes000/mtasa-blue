@@ -52,7 +52,10 @@ namespace EIdClass
         VECTOR2,
         VECTOR3,
         VECTOR4,
-        MATRIX
+        MATRIX,
+        RIGID_BODY,
+        SHAPE,
+        STATIC_COLLISION,
     };
 };
 

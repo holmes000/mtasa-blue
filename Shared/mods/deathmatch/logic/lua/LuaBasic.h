@@ -62,6 +62,11 @@ namespace lua
         lua_pushlstring(L, value.data(), value.length());
     }
 
+    inline void Push(lua_State* L, const std::string_view& value)
+    {
+        lua_pushlstring(L, value.data(), value.length());
+    }
+
     inline void Push(lua_State* L, const CLuaArgument& arg)
     {
         if (arg.GetType() == LUA_TNONE)
@@ -121,6 +126,23 @@ namespace lua
     inline void Push(lua_State* L, const CLuaVector4D* value) { lua_pushvector(L, *value); }
     inline void Push(lua_State* L, const CLuaMatrix* value) { lua_pushmatrix(L, *value); }
 
+    inline int Push(lua_State* L, CLuaPhysicsShape* value)
+    {
+        lua_pushshape(L, value);
+        return 1;
+    }
+    
+    inline int Push(lua_State* L, CLuaPhysicsRigidBody* value)
+    {
+        lua_pushrigidbody(L, value);
+        return 1;
+    }
+    
+    inline int Push(lua_State* L, CLuaPhysicsStaticCollision* value)
+    {
+        lua_pushstaticcollision(L, value);
+        return 1;
+    }
 
     // Overload for enum types only
     template <typename T>

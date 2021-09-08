@@ -132,6 +132,36 @@ void lua_pushtimer(lua_State* luaVM, CLuaTimer* pTimer)
     lua_pushobject(luaVM, szClass, (void*)reinterpret_cast<unsigned int*>(pTimer->GetScriptID()));
 }
 
+void lua_pushrigidbody(lua_State* luaVM, CLuaPhysicsRigidBody* pRigidBody)
+{
+    const char* szClass = nullptr;
+    CLuaMain*   pLuaMain = g_pGame->GetLuaManager()->GetVirtualMachine(luaVM);
+    // if (pLuaMain->IsOOPEnabled())
+    //    szClass = CLuaClassDefs::GetTimerClass(pRigidBody);
+
+    lua_pushobject(luaVM, szClass, (void*)reinterpret_cast<unsigned int*>(pRigidBody->GetScriptID()));
+}
+
+void lua_pushstaticcollision(lua_State* luaVM, CLuaPhysicsStaticCollision* pStaticCollision)
+{
+    const char* szClass = nullptr;
+    CLuaMain*   pLuaMain = g_pGame->GetLuaManager()->GetVirtualMachine(luaVM);
+    // if (pLuaMain->IsOOPEnabled())
+    //    szClass = CLuaClassDefs::GetTimerClass(pRigidBody);
+
+    lua_pushobject(luaVM, szClass, (void*)reinterpret_cast<unsigned int*>(pStaticCollision->GetScriptID()));
+}
+
+void lua_pushshape(lua_State* luaVM, CLuaPhysicsShape* pShape)
+{
+    const char* szClass = nullptr;
+    CLuaMain*   pLuaMain = g_pGame->GetLuaManager()->GetVirtualMachine(luaVM);
+    // if (pLuaMain->IsOOPEnabled())
+    //    szClass = CLuaClassDefs::GetTimerClass(pRigidBody);
+
+    lua_pushobject(luaVM, szClass, (void*)reinterpret_cast<unsigned int*>(pShape->GetScriptID()));
+}
+
 void lua_pushxmlnode(lua_State* luaVM, CXMLNode* pElement)
 {
     const char* szClass = NULL;
@@ -272,6 +302,16 @@ void lua_pushmatrix(lua_State* luaVM, const CMatrix& matrix)
     CLuaMatrix* pMatrix = new CLuaMatrix(matrix);
     lua_pushobject(luaVM, "Matrix", (void*)reinterpret_cast<unsigned int*>(pMatrix->GetScriptID()), true);
     lua_addtotalbytes(luaVM, LUA_GC_EXTRA_BYTES);
+}
+
+CLuaMain& lua_getownercluamain(lua_State* L)
+{
+    return *static_cast<class CLuaMain*>(lua_getmtasaowner(L));
+}
+
+CResource& lua_getownerresource(lua_State* L)
+{
+    return *lua_getownercluamain(L).GetResource();
 }
 
 // Just do a type check vs LUA_TNONE before calling this, or bant

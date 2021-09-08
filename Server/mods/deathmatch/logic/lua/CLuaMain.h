@@ -21,6 +21,7 @@ class CLuaMain;
 #include "../CTextDisplay.h"
 
 #include "CLuaFunctionDefs.h"
+#include "CSharedLuaMain.h"
 
 #define MAX_SCRIPTNAME_LENGTH 64
 
@@ -37,18 +38,18 @@ struct CRefInfo
     int               iFunction;
 };
 
-class CLuaMain            //: public CClient
+class CLuaMain : public CSharedLuaMain            //: public CClient
 {
 public:
     ZERO_ON_NEW
     CLuaMain(class CLuaManager* pLuaManager, CObjectManager* pObjectManager, CPlayerManager* pPlayerManager, CVehicleManager* pVehicleManager,
              CBlipManager* pBlipManager, CRadarAreaManager* pRadarAreaManager, CMapManager* pMapManager, CResource* pResourceOwner, bool bEnableOOP);
 
-    ~CLuaMain();
+    virtual ~CLuaMain();
 
     bool LoadScriptFromBuffer(const char* cpBuffer, unsigned int uiSize, const char* szFileName);
     bool LoadScript(const char* szLUAScript);
-    void UnloadScript();
+    virtual void UnloadScript();
 
     void Start();
 
@@ -124,7 +125,6 @@ private:
     lua_State*        m_luaVM;
     CLuaTimerManager* m_pLuaTimerManager;
 
-    class CResource*     m_pResource;
     class CResourceFile* m_pResourceFile;
     CBlipManager*        m_pBlipManager;
     CObjectManager*      m_pObjectManager;

@@ -13,7 +13,8 @@ project "Client Deathmatch"
 		"../../../vendor/bass/lib/bass",
 		"../../../vendor/bass/lib/bass_fx",
 		"../../../vendor/bass/lib/bassmix",
-		"../../../vendor/bass/lib/tags"
+		"../../../vendor/bass/lib/tags",
+		"BulletDynamics", "BulletCollision", "LinearMath",
 	}
 
 	vpaths {
@@ -43,7 +44,9 @@ project "Client Deathmatch"
 			"../../../vendor/lua/src",
 			"../../../Shared/mods/deathmatch/logic",
 			"../../../Shared/animation",
-			"../../../vendor/sparsehash/src/"
+			"../../../vendor/sparsehash/src/",
+			"../../../vendor/bulletphysics3d/src/",
+			"../../../vendor/bulletphysics3d/"
 	}
 
 	files {

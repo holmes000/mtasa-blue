@@ -29,11 +29,11 @@ extern CNetServer* g_pRealNetServer;
 
 CLuaMain::CLuaMain(CLuaManager* pLuaManager, CObjectManager* pObjectManager, CPlayerManager* pPlayerManager, CVehicleManager* pVehicleManager,
                    CBlipManager* pBlipManager, CRadarAreaManager* pRadarAreaManager, CMapManager* pMapManager, CResource* pResourceOwner, bool bEnableOOP)
+    : CSharedLuaMain(pResourceOwner)
 {
     // Initialise everything to be setup in the Start function
     m_pLuaManager = pLuaManager;
     m_luaVM = NULL;
-    m_pResource = pResourceOwner;
     m_pResourceFile = NULL;
     m_bBeingDeleted = false;
     m_pLuaTimerManager = new CLuaTimerManager;
@@ -172,7 +172,7 @@ void CLuaMain::InitVM()
     assert(!m_luaVM);
 
     // Create a new VM
-    m_luaVM = lua_open();
+    m_luaVM = lua_open(this);
     m_pLuaManager->OnLuaMainOpenVM(this, m_luaVM);
 
     // Set the instruction count hook
@@ -358,6 +358,8 @@ void CLuaMain::Start()
 
 void CLuaMain::UnloadScript()
 {
+    CSharedLuaMain::UnloadScript();
+
     // Delete all timers and events
     m_pLuaTimerManager->RemoveAllTimers();
 

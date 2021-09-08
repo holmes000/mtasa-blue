@@ -111,6 +111,7 @@ class COpenPortsTester;
 class CMasterServerAnnouncer;
 class CHqComms;
 class CFunctionUseLogger;
+class CBulletPhysics;
 
 // Packet forward declarations
 class CCommandPacket;
@@ -254,6 +255,7 @@ public:
     SharedUtil::CAsyncTaskScheduler* GetAsyncTaskScheduler() { return m_pAsyncTaskScheduler; }
 
     std::shared_ptr<CTrainTrackManager> GetTrainTrackManager() { return m_pTrainTrackManager; }
+    CBulletPhysics*                     GetPhysics() { return m_pPhysics.get(); }
 
     void JoinPlayer(CPlayer& Player);
     void InitialDataStream(CPlayer& Player);
@@ -563,6 +565,8 @@ private:
 
     CCustomWeaponManager* m_pCustomWeaponManager;
     CFunctionUseLogger*   m_pFunctionUseLogger;
+
+    std::unique_ptr<CBulletPhysics> m_pPhysics;
 
     char* m_szCurrentFileName;
 

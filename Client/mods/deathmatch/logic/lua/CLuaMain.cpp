@@ -27,7 +27,7 @@ SString             CLuaMain::ms_strExpectedUndumpHash;
 #include "luascripts/exports.lua.h"
 #include "luascripts/inspect.lua.h"
 
-CLuaMain::CLuaMain(CLuaManager* pLuaManager, CResource* pResourceOwner, bool bEnableOOP)
+CLuaMain::CLuaMain(CLuaManager* pLuaManager, CResource* pResourceOwner, bool bEnableOOP) : CSharedLuaMain(pResourceOwner)
 {
     // Initialise everything to be setup in the Start function
     m_pLuaManager = pLuaManager;
@@ -35,8 +35,6 @@ CLuaMain::CLuaMain(CLuaManager* pLuaManager, CResource* pResourceOwner, bool bEn
     m_bBeingDeleted = false;
     m_pLuaTimerManager = new CLuaTimerManager;
     m_FunctionEnterTimer.SetMaxIncrement(500);
-
-    m_pResource = pResourceOwner;
 
     m_bEnableOOP = bEnableOOP;
 
@@ -143,7 +141,7 @@ void CLuaMain::InitVM()
     assert(!m_luaVM);
 
     // Create a new VM
-    m_luaVM = lua_open();
+    m_luaVM = lua_open(this);
     m_pLuaManager->OnLuaMainOpenVM(this, m_luaVM);
 
     // Set the instruction count hook
@@ -322,6 +320,8 @@ void CLuaMain::Start()
 
 void CLuaMain::UnloadScript()
 {
+    CSharedLuaMain::UnloadScript();
+
     // ACHTUNG: UNLOAD MODULES!
 
     // Delete all timers and events

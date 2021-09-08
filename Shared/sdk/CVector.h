@@ -15,6 +15,8 @@
 
 #include "CVector4D.h"
 
+#include "bulletphysics3d/LinearMath/btVector3.h"
+
 /**
  * CVector Structure used to store a 3D vertex.
  */
@@ -273,4 +275,8 @@ public:
     }
 
     inline bool operator!=(const CVector& param) const noexcept { return !(*this == param); }
+
+    std::tuple<float, float, float> AsXYZ() const { return {fX, fY, fZ}; }
+    CVector(const btVector3& other) : fX(other.x()), fY(other.y()), fZ(other.z()) {}
+    operator btVector3() const { return btVector3{fX, fY, fZ}; }
 };
